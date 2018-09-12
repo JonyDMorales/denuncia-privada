@@ -1,5 +1,4 @@
 @extends('layouts.app')
-@include("navbar.navbar", ['title' => "Filtro de denuncias"])
 @section('content')
     <div class="text-right"  style="margin: 30px">
             <h4 class="font-weight-bold"> Total: {{ $total }} </h4>
@@ -98,7 +97,7 @@
     </div>
 @endsection
 
-@section('javascript')
+@section('bottom_javascript')
     <script language="javascript" type="text/javascript">
 
         $(document).ready(function() {

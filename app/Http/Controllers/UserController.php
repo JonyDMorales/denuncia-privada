@@ -32,19 +32,4 @@ class UserController extends Controller{
                 ->with('mensaje','Metodo no aceptado');
         }
     }
-
-    public function login(Request $request){
-        if($request->isMethod('post')) {
-
-            if(true) {
-                return view('shared.complete.200');
-            }else{
-                return view('shared.complete.404')
-                    ->with('mensaje','No se creo el usuario');
-            }
-        }else{
-            return view('shared.complete.404')
-                ->with('mensaje','Metodo no aceptado');
-        }
-    }
 }

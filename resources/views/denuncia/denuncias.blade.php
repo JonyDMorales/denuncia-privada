@@ -1,7 +1,5 @@
 @extends('layouts.app')
-@include("navbar.navbar", ['title' => "Denuncias"])
 @section('content')
-@endsection
 <div class="text-right"  style="margin: 30px">
     <h4 class="font-weight-bold"> Total: {{ $total }} </h4>
 </div>
@@ -38,3 +36,4 @@
     @endforeach
     <div style="padding-bottom: 30px"></div>
 </div>
+@endsection

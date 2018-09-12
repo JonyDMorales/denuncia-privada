@@ -1,11 +1,10 @@
 @extends('layouts.app')
-@include("navbar.navbar", ['title' => "Mapa de denuncias"])
 @section('content')
     <div class="row">
-        <div class="col-md-8" style="margin: 10px">
-            <div id="map-canvas" style="width:100%; min-height:400px; height:80%;"></div>
+        <div class="col-md-9" >
+            <div id="map-canvas" style="width:100%; min-height:600px; height:80%;"></div>
         </div>
-        <div class="col-md-3" style=" overflow-y: scroll; height: 560px;  ">
+        <div class="col-md-3" style=" overflow-y: scroll; height: 600px;  ">
             @foreach( $denuncias as $i => $denuncia )
                 <div class="card card-body" id="{{ $total - $i }}">
                     <h6 class="text-right"> {{ $denuncia->created_at }} </h6>
@@ -33,8 +32,9 @@
         </div>
     </div>
 @endsection
-@section('javascript')
+@section('bottom_javascript')
     <script language="javascript" type="text/javascript">
+        console.log('entro');
         var map;
         var Markers = [];
         var InitMarkers = [
@@ -43,8 +43,7 @@
             @endforeach
         ];
 
-        function setMarker(lattitude, longitude, title)
-        {
+        function setMarker(lattitude, longitude, title) {
             var markerEvent = new google.maps.Marker({
                 position: new google.maps.LatLng(lattitude, longitude),
                 map: map,
@@ -62,6 +61,7 @@
         }
 
         function initMap() {
+
             map = new google.maps.Map(document.getElementById('map-canvas'), {
                 center: { lat: 23.634501, lng: -102.552784 },
                 zoom: 5

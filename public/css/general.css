@@ -1,0 +1,31 @@
+.table-fixed tbody tr,
+.table-fixed thead tr{
+    width: 98%;
+    display: inline-table;
+    table-layout: fixed;
+}
+.table-fixed{
+    height: 780px;
+    display: -moz-groupbox;
+}
+.table-fixed tbody {
+    height: 750px;
+    overflow-y: auto;
+    position:absolute;
+}
+
+.table-fixed-mini tbody tr,
+.table-fixed-mini thead tr {
+    width: 98%;
+    display: inline-table;
+    table-layout: fixed;
+}
+.table-fixed-mini{
+    height: 200px;
+    display: -moz-groupbox;
+}
+.table-fixed-mini tbody {
+    height: 180px;
+    overflow-y: auto;
+    position:absolute;
+}

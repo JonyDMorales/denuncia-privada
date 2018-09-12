@@ -19,6 +19,10 @@ class DenunciaController extends Controller
         return view('denuncia.formulario');
     }
 
+    public function registrar(){
+        return view('auth.register');
+    }
+
     public function filtro()
     {
         $denuncias = Denuncia::where('status', 'exists', true)
