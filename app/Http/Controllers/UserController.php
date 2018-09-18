@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\User;
+use App\Configuraciones;
 use Illuminate\Http\Request;
 
 class UserController extends Controller{
@@ -11,7 +12,9 @@ class UserController extends Controller{
     }
 
     public function configuracion(){
-        return view('admin.configuraciones');
+        $id = '5b9c35f4c489b90496853a3e';
+        $configuraciones = Configuraciones::project(['post' => 1, "fields" => 1])->findOrFail($id);
+        return view('admin.configuraciones') ->with("configuraciones", $configuraciones);
     }
 
     public function insertar(Request $request){
@@ -25,7 +28,7 @@ class UserController extends Controller{
             if($user->save()) {
                 return view('shared.complete.200')
                     ->with('mensaje', 'Usuario creado')
-                    ->with('destino', 'usuarios');
+                    ->with('destino', 'registrar');
             }else{
                 return view('shared.complete.404')
                     ->with('mensaje','No se creo el usuario');
@@ -36,19 +39,38 @@ class UserController extends Controller{
         }
     }
 
-    public function postFacebook(Request $request){
-        $client = new \GuzzleHttp\Client();
-        $id = '171014026947611';
-        $token = 'EAADPN6Uo7GUBALbJIFd7kOEXcZCJAGNartBSNZBDAIKRcGDdyD7ZCTWZBBn9IeRka8RXCZBpc8OYvHA6WlbqS3rzoZBwNwCMtPnlmk9BGiwJPZBYbQF4iSsbXI7R1ZAfKAc9VJtH86t8JG076CFNVSKzIMdjpqZC1tlcdpVNDZBGFF9x25BVQfBOcfFAF4TghjD8eeBNpF9zjtYwZDZD';
-        $res = $client->request('POST','https://graph.facebook.com/'.$id.'/feed?access_token='.$token.'&message='+ $request->denuncia);
-        if( $res->getStatusCode() == '200'){
+    public function agregarCampo(Request $request){
+        $id = '5b9c35f4c489b90496853a3e';
+        $campo = $request->campo;
+        $configuraciones = Configuraciones::project(["fields" => 1])->findOrFail($id);
+        $configuraciones->fields = array_add($configuraciones->fields, "campo ".str_random(4), $campo);
+        if ($configuraciones->save()){
             return view('shared.complete.200')
-                ->with('mensaje', 'Usuario creado')
-                ->with('destino', 'usuarios');
+                ->with('mensaje', 'Campo agregado')
+                ->with('destino', 'configuraciones');
+        } else {
+            return view('shared.complete.404')
+                ->with('mensaje','Campo no agregado');
         }
-        return view('shared.complete.404')
-            ->with('mensaje','Metodo no aceptado');
     }
 
+    public function cambiarPost(Request $request){
+        $id = '5b9c35f4c489b90496853a3e';
+        $opcion = $request->opcion;
+        $configuraciones = Configuraciones::project(['post' => 1])->findOrFail($id);
+        if($opcion[0] == '1') {
+            $configuraciones->post = true;
+        } else {
+            $configuraciones->post = false;
+        }
+        if ($configuraciones->save()){
+            return view('shared.complete.200')
+                ->with('mensaje', 'Post Cambiado')
+                ->with('destino', 'configuraciones');
+        } else {
+            return view('shared.complete.404')
+                ->with('mensaje','Post no cambiado');
+        }
+    }
 
 }

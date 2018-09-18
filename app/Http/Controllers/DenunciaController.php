@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Mail;
 use App\Denuncia;
+use App\Configuraciones;
 use App\Token;
 use Illuminate\Http\File;
 use Illuminate\Http\Request;
@@ -23,16 +24,19 @@ class DenunciaController extends Controller
         return view('auth.register');
     }
 
-    public function filtro()
-    {
+    public function filtro(){
+        $id = '5b9c35f4c489b90496853a3e';
         $denuncias = Denuncia::where('status', 'exists', true)
             ->where('status', '=',0)
             ->orderBy('created_at', 'desc')
             ->get();
         $totalDenuncias = $denuncias->count();
+        $configuraciones = Configuraciones::project(['post' => 1])->findOrFail($id);
+
         return view("denuncia.filtro")
             ->with('denuncias', $denuncias)
-            ->with('total', $totalDenuncias);
+            ->with('total', $totalDenuncias)
+            ->with('post', $configuraciones->post);
     }
 
     public function denuncias()
@@ -201,6 +205,42 @@ class DenunciaController extends Controller
         } else {
             return response()->json(['error' => 'datos incompletos'], 400);
         }
+    }
+
+    public function aprobarPublicarDenuncia(Request $request){
+        if ($request->isMethod('post') && $request->has('id')) {
+            if($this->obetenerStatus($request->id)){
+                try{
+                    $status = Denuncia::project([ 'status' => 1])->findOrFail($request->id);
+                    $status->status = 1;
+                    if($status->save()){
+                        return response()->json(['denuncia' => 'aprobada'], 200);
+                    }
+                    return response()->json(['error' => 'no se aprobo la denuncia'], 400);
+                } catch (ModelNotFoundException $e) {
+                    return response()->json(['error' => 'no se encontro documento'], 400);
+                }
+            } else {
+                return response()->json(['error' => 'no se aprobo'], 400);
+            }
+        } else {
+            return response()->json(['error' => 'datos incompletos'], 400);
+        }
+    }
+
+    public function postFacebook($denunciaId){
+        $client = new \GuzzleHttp\Client();
+        $id = '171014026947611';
+        $denuncia = Denuncia::where('id', '=', $denunciaId);
+        $token = 'EAADPN6Uo7GUBALbJIFd7kOEXcZCJAGNartBSNZBDAIKRcGDdyD7ZCTWZBBn9IeRka8RXCZBpc8OYvHA6WlbqS3rzoZBwNwCMtPnlmk9BGiwJPZBYbQF4iSsbXI7R1ZAfKAc9VJtH86t8JG076CFNVSKzIMdjpqZC1tlcdpVNDZBGFF9x25BVQfBOcfFAF4TghjD8eeBNpF9zjtYwZDZD';
+        $res = $client->request('POST','https://graph.facebook.com/'.$id.'/feed?access_token='.$token.'&message='+ $denuncia);
+        if( $res->getStatusCode() == '200'){
+            return view('shared.complete.200')
+                ->with('mensaje', 'Usuario creado')
+                ->with('destino', 'filtro');
+        }
+        return view('shared.complete.404')
+            ->with('mensaje','Metodo no aceptado');
     }
 
     public function rechazarDenuncia(Request $request){

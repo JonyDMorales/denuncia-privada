@@ -19,6 +19,10 @@ Route::prefix('admin')->middleware('auth')->group(function() {
     Route::post('registrar', 'UserController@insertar')->name('registrar');
     Route::post('email', 'DenunciaController@enviarEmail');
 
+    Route::post('agregar', 'UserController@agregarCampo')->name('agregar');
+    Route::post('post', 'UserController@cambiarPost')->name('post');
+
+
     Route::get('facebook', 'UserController@postFacebook')->name('facebook');
 
     Route::get('filtro', 'DenunciaController@filtro')->name('filtro');

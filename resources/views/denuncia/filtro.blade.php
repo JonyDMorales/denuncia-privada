@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
     <div class="text-right"  style="margin: 30px">
-            <h4 class="font-weight-bold"> Total: {{ $total }} </h4>
+        <h4 class="font-weight-bold"> Total: {{ $total }} </h4>
     </div>
     <div class="container">
         {{ csrf_field() }}
@@ -37,6 +37,9 @@
                         <h6 class="text-right"> {{ $total - $i }} </h6>
                         <button mongo="{{ $denuncia ->id }}" class="btn btn-outline-primary btn-block">Aprobar</button>
                         <button mongo="{{ $denuncia ->id }}" class="btn btn-outline-danger btn-block" style="margin-top: 30%">Rechazar</button>
+                        @if($post)
+                            <button mongo="{{ $denuncia ->id }}" class="btn btn-outline-success btn-block" style="margin-top: 30%">Aprobar y publicar</button>
+                        @endif
                     </div>
                 </div>
             </div>
