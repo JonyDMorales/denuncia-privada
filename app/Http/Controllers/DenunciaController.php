@@ -211,12 +211,13 @@ class DenunciaController extends Controller
         if ($request->isMethod('post') && $request->has('id')) {
             if($this->obetenerStatus($request->id)){
                 try{
+                    $res = $this->postFacebook($request->id);
                     $status = Denuncia::project([ 'status' => 1])->findOrFail($request->id);
                     $status->status = 1;
-                    if($status->save()){
+                    if($status->save() && $res){
                         return response()->json(['denuncia' => 'aprobada'], 200);
                     }
-                    return response()->json(['error' => 'no se aprobo la denuncia'], 400);
+                    return response()->json(['error' => 'no se publico o aprobo la denuncia'], 400);
                 } catch (ModelNotFoundException $e) {
                     return response()->json(['error' => 'no se encontro documento'], 400);
                 }
@@ -231,16 +232,13 @@ class DenunciaController extends Controller
     public function postFacebook($denunciaId){
         $client = new \GuzzleHttp\Client();
         $id = '171014026947611';
-        $denuncia = Denuncia::where('id', '=', $denunciaId);
-        $token = 'EAADPN6Uo7GUBALbJIFd7kOEXcZCJAGNartBSNZBDAIKRcGDdyD7ZCTWZBBn9IeRka8RXCZBpc8OYvHA6WlbqS3rzoZBwNwCMtPnlmk9BGiwJPZBYbQF4iSsbXI7R1ZAfKAc9VJtH86t8JG076CFNVSKzIMdjpqZC1tlcdpVNDZBGFF9x25BVQfBOcfFAF4TghjD8eeBNpF9zjtYwZDZD';
-        $res = $client->request('POST','https://graph.facebook.com/'.$id.'/feed?access_token='.$token.'&message='+ $denuncia);
+        $denuncia = Denuncia::project([ 'direccion' => 1, 'descripcion' => 1, 'fecha' => 1])->findOrFail($denunciaId);
+        $token = 'EAADPN6Uo7GUBAAQJZCk0JdD8MaAQ68y8976ZC4QodlYGFZB64Q2dhKwCYYU0RIZCPwdZAXL99RN5gRW8agqXyqB0XUOo0UZCXAju1kONCOJkLh4pxD5OZBB51dSt44GjbvNlgcZA7DrEQsXevEz2BlgcZBRj96vuEfl5ZALl7KeDQsA1DfOmBhFhhv631kb10jys0oU6TX4FHbewZDZD';
+        $res = $client->request('POST','https://graph.facebook.com/'.$id.'/feed?access_token='.$token.'&message='.$denuncia->direccion.' '.$denuncia->descripcion.' '.$denuncia->fecha);
         if( $res->getStatusCode() == '200'){
-            return view('shared.complete.200')
-                ->with('mensaje', 'Usuario creado')
-                ->with('destino', 'filtro');
+            return true;
         }
-        return view('shared.complete.404')
-            ->with('mensaje','Metodo no aceptado');
+        return false;
     }
 
     public function rechazarDenuncia(Request $request){

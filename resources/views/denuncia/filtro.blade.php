@@ -169,6 +169,30 @@
                     $("#modalFail").modal('show');
                 }
             });
+
+            $('.btn-outline-success').on('click', function (e) {
+                e.preventDefault();
+                var id = $(this).attr('mongo');
+                if(id){
+                    $("#modalLoading").modal('show');
+                    $.post('{{route('postear')}}', {id: id})
+                        .done(function (res) {
+                            $('#'+ id).hide();
+                            $("#modalLoading").modal('hide');
+                            $("#modalSuccess").modal('show');
+                        })
+                        .fail(function (res) {
+                            $('#'+ id).hide();
+                            $("#modalLoading").modal('hide');
+                            $("#modalFail #errmess").text("Ya se opero esa denuncia");
+                            $("#modalFail").modal('show');
+                        });
+                } else {
+                    $('#'+ id).hide();
+                    $("#modalFail #errmess").text("Ya se opero esa denuncia");
+                    $("#modalFail").modal('show');
+                }
+            });
         });
     </script>
 @endsection
